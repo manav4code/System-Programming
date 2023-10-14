@@ -1,6 +1,5 @@
 #include "clientServer.h"
 
-struct Shared *shared;
 // Wrapper for pipe
 
 
