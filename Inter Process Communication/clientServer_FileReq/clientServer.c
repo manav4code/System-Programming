@@ -6,22 +6,22 @@
 void Pipe(int *fd){
     
     if(pipe(fd) == -1){
-        perror(strerror(errno));
+        perror("Error occured while opening pipe");
         exit(EXIT_FAILURE);
     }
 }
 
 void Close(int fd){
     if(close(fd) == -1){
-        perror(strerror(errno));
-        exit(errno);
+        perror("Error occured while closing pipe");
+        exit(EXIT_FAILURE);
     }
 }
 
 void Write(int fd, const void* buf, size_t nbytes){
     if(write(fd, buf, nbytes) == -1){
-        perror(strerror(errno));
-        exit(errno);
+        perror("Error occured while Writing");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -29,8 +29,8 @@ ssize_t Read(int fd, char* buf, size_t nbytes){
     ssize_t n;
 
     if((n = read(fd, buf, nbytes)) == -1){
-        perror(strerror(errno));
-        exit(errno);
+        perror("Error occured while reading");
+        exit(EXIT_FAILURE);
     }
 
     return n;
@@ -40,7 +40,7 @@ ssize_t Read(int fd, char* buf, size_t nbytes){
 pid_t Fork(){
     pid_t pid;
     if( (pid = fork()) == -1){
-        perror(strerror(errno));
+        perror("Error occured while Fork()");
         exit(EXIT_FAILURE);
     }
     return pid;
@@ -50,8 +50,8 @@ pid_t Waitpid(pid_t childPid, int *status_ptr, int options){
     pid_t returnId;
 
     if((returnId = (childPid, status_ptr, options)) == -1){
-        perror(strerror(errno));
-        exit(errno);
+        perror("Error occured while waiting for child process");
+        exit(EXIT_FAILURE);
     }
     return returnId;
 }
