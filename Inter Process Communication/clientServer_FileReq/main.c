@@ -72,16 +72,17 @@ void client(int readfd, int writefd){
 
 
     sem_wait(&shared->mutex);
-    if(shared->signal == true){
-        // To handle invalid file
-        perror("Error");
-        return;
-    }
 
     // Keep reading from Pipe
-    printf("Content of file:\n");
+    if(shared->signal == false){
+        printf("Content of file:\n");
+    }
     while((n = Read(readfd, buffer, MAXLINE)) > 0){
         // Writing to STDOUT
+        if(shared->signal == true){
+            Write(STDOUT_FILENO, buffer, n);
+            exit(EXIT_FAILURE);
+        }
         Write(STDOUT_FILENO, buffer, n);
     }
 }
@@ -100,6 +101,7 @@ void server(int readfd, int writefd){
     buffer[n] = '\0';
 
     if( (filefd = open(buffer, O_RDONLY)) < 0){
+        printf("Server: File path does not exist\n");
         // Write back the error msg to client
         shared->signal = true;
         snprintf(buffer + n, sizeof(buffer) - n, ": can't open file, %s\n", strerror(errno));
@@ -107,6 +109,7 @@ void server(int readfd, int writefd){
         n = strlen(buffer);
         Write(writefd, buffer, n);
         sem_post(&shared->mutex);
+        exit(EXIT_FAILURE);
     }
     else{
         sem_post(&shared->mutex);
